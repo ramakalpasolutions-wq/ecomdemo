@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --navy-dark: #2d3e5f;
+  --navy-medium: #3d5273;
+  --orange-primary: #d87f3f;
+  --orange-light: #e89d5f;
+  --cream: #f5f1e8;
+  --white: #ffffff;
+  --brown-text: #5a4a3a;
+}
+
+@layer components {
+  .container-custom {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container-custom {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-custom {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  .btn-primary {
+    background-color: #d87f3f;
+    color: white;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+  }
+  
+  .btn-primary:hover {
+    background-color: #c46f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(216, 127, 63, 0.3);
+  }
+  
+  .btn-secondary {
+    background-color: white;
+    color: #2d3e5f;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    border: 2px solid #2d3e5f;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #2d3e5f;
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .product-card {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+}
