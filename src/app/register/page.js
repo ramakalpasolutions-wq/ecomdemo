@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -15,6 +16,8 @@ export default function RegisterPage() {
   })
   const [error, setError] = useState('')
 
+  const redirectUrl = searchParams.get('redirect') || '/'
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
     setError('')
@@ -23,14 +26,20 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
-      setLoading(false)
       return
     }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    setLoading(true)
 
     try {
       const res = await fetch('/api/auth/register', {
@@ -46,8 +55,8 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (data.success) {
-        alert('Registration successful!')
-        router.push('/')
+        // Redirect to login or home
+        router.push('/login?registered=true')
       } else {
         setError(data.error || 'Registration failed')
       }
@@ -64,7 +73,7 @@ export default function RegisterPage() {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#2d3e5f] mb-2">Create Account</h1>
-          <p className="text-gray-600">Join Nature's Treats today</p>
+          <p className="text-gray-600">Join us for exclusive wellness products</p>
         </div>
 
         {error && (
@@ -100,7 +109,7 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d87f3f] focus:border-transparent outline-none"
-              placeholder="john@example.com"
+              placeholder="you@example.com"
             />
           </div>
 
@@ -118,7 +127,6 @@ export default function RegisterPage() {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d87f3f] focus:border-transparent outline-none"
               placeholder="••••••••"
             />
-            <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
           </div>
 
           <div>
@@ -158,5 +166,17 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d87f3f]"></div>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   )
 }

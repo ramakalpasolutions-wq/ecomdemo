@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -29,47 +29,46 @@ export default function LoginPage() {
   }
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  setError('')
-  setLoading(true)
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-  try {
-    console.log('📤 Sending login request...')
-    
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
+    try {
+      console.log('📤 Sending login request...')
+      
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
 
-    console.log('📥 Response status:', res.status)
+      console.log('📥 Response status:', res.status)
 
-    // Check if response is JSON
-    const contentType = res.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
-      console.error('❌ Response is not JSON')
-      const text = await res.text()
-      console.error('Response:', text)
-      throw new Error('Server error: Invalid response format')
+      // Check if response is JSON
+      const contentType = res.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('❌ Response is not JSON')
+        const text = await res.text()
+        console.error('Response:', text)
+        throw new Error('Server error: Invalid response format')
+      }
+
+      const data = await res.json()
+      console.log('📦 Response data:', data)
+
+      if (data.success) {
+        console.log('✅ Login successful, redirecting to:', redirectUrl)
+        window.location.href = redirectUrl
+      } else {
+        setError(data.error || 'Login failed')
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error)
+      setError(error.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
-
-    const data = await res.json()
-    console.log('📦 Response data:', data)
-
-    if (data.success) {
-      console.log('✅ Login successful, redirecting to:', redirectUrl)
-      window.location.href = redirectUrl
-    } else {
-      setError(data.error || 'Login failed')
-    }
-  } catch (error) {
-    console.error('❌ Login error:', error)
-    setError(error.message || 'Something went wrong. Please try again.')
-  } finally {
-    setLoading(false)
   }
-}
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f1e8] to-[#faf7f0] py-12 px-4">
@@ -141,5 +140,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d87f3f]"></div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
