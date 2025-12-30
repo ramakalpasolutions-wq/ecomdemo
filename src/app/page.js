@@ -7,9 +7,17 @@ import { ArrowRight, Shield, Truck, Award, Leaf } from 'lucide-react'
 // Fetch products from API
 async function getFeaturedProducts() {
   try {
-    const res = await fetch('http://localhost:3000/api/products', {
-      cache: 'no-store'
+    // Use environment variable or fallback to localhost
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/products`, {
+      cache: 'no-store',
+      next: { revalidate: 60 } // Revalidate every 60 seconds
     })
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch products')
+    }
+    
     const data = await res.json()
     return data.success ? data.data.slice(0, 4) : []
   } catch (error) {
@@ -21,9 +29,17 @@ async function getFeaturedProducts() {
 // Fetch categories from API
 async function getCategories() {
   try {
-    const res = await fetch('http://localhost:3000/api/categories', {
-      cache: 'no-store'
+    // Use environment variable or fallback to localhost
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/categories`, {
+      cache: 'no-store',
+      next: { revalidate: 60 } // Revalidate every 60 seconds
     })
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch categories')
+    }
+    
     const data = await res.json()
     return data.success ? data.data.slice(0, 4) : []
   } catch (error) {
